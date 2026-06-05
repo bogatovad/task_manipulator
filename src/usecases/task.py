@@ -1,21 +1,29 @@
 from src.entities.task import TaskStatus
 from src.interface_adapters.dtos.task import TaskDto
+from src.interface_adapters.queue_interfaces.queue import TaskQueueInterface
 from src.interface_adapters.repositories_interfaces.task import TaskStorageInterface
 from src.usecases.base import BaseUseCase
 
 
 class CreateTaskUseCase(BaseUseCase):
-    def __init__(self, task_repository: TaskStorageInterface):
+    def __init__(
+        self, task_repository: TaskStorageInterface, queue: TaskQueueInterface
+    ):
         self.task_repository = task_repository
+        self.queue = queue
 
     async def execute(self, task: TaskDto) -> TaskDto:
         await self.task_repository.create_task(task)
+        await self.queue.publish(task)
         return task
 
 
 class GetTasksUseCase(BaseUseCase):
-    def __init__(self, task_repository: TaskStorageInterface):
+    def __init__(
+        self, task_repository: TaskStorageInterface, queue: TaskQueueInterface
+    ):
         self.task_repository = task_repository
+        self.queue = queue
 
     async def execute(self) -> list[TaskDto]:
         return await self.task_repository.get_tasks()

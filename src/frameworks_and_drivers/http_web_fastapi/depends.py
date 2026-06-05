@@ -1,3 +1,6 @@
+from src.frameworks_and_drivers.queue_implementations.rabbit_mq_queue import (
+    TaskRabbitMqQueue,
+)
 from src.frameworks_and_drivers.repositories_implementations.aync_sqlalchemy.database import (
     get_db_async_context_manager,
 )
@@ -19,8 +22,11 @@ from collections.abc import AsyncGenerator
 async def task_controller_dependency() -> AsyncGenerator[TaskController]:
     async with get_db_async_context_manager() as session:
         task_sql_alchemy_repository = TaskSqlAlchemyRepository(session=session)
+        queue = TaskRabbitMqQueue()
+
         create_task_usecase = CreateTaskUseCase(
-            task_repository=task_sql_alchemy_repository
+            task_repository=task_sql_alchemy_repository,
+            queue=queue,
         )
         get_task_usecase = GetTaskUseCase(task_repository=task_sql_alchemy_repository)
         get_status_task_usecase = GetStatusTaskUseCase(
@@ -37,6 +43,7 @@ async def task_controller_dependency() -> AsyncGenerator[TaskController]:
             delete_task_usecase=delete_task_usecase,
             get_tasks_usecase=get_tasks_usecase,
         )
+
         task_controller = TaskController(
             usecase=usecase_dto,
         )
