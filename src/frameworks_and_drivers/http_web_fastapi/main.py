@@ -8,7 +8,9 @@ from src.frameworks_and_drivers.http_web_fastapi.depends import (
 from src.frameworks_and_drivers.http_web_fastapi.exception_handlers import (
     task_not_found_handler,
 )
-from src.interface_adapters.controllers.task import TaskController
+from src.interface_adapters.controllers.controllers_api.controllers import (
+    TaskController,
+)
 from src.interface_adapters.dtos.task import TaskDto
 
 

@@ -12,9 +12,11 @@ from src.frameworks_and_drivers.repositories_implementations.aync_sqlalchemy.dat
 from src.frameworks_and_drivers.repositories_implementations.aync_sqlalchemy.task import (
     TaskSqlAlchemyRepository,
 )
-from src.interface_adapters.controllers.task import TaskController
+from src.interface_adapters.controllers.controllers_api.controllers import (
+    TaskController,
+)
 from src.interface_adapters.dtos.usecases import UsecaseDto
-from src.usecases.task import (
+from src.usecases.usecases_api.task import (
     CreateTaskUseCase,
     GetTaskUseCase,
     GetStatusTaskUseCase,

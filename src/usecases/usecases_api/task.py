@@ -50,11 +50,3 @@ class GetStatusTaskUseCase(BaseUseCase):
 
     async def execute(self, task_id: int) -> TaskStatus:
         return await self.task_repository.get_task_status(task_id)
-
-
-class ProcessTasksUseCase(BaseUseCase):
-    def __init__(self, task_repository: TaskStorageInterface):
-        self.task_repository = task_repository
-
-    async def execute(self, task: TaskDto) -> bool:
-        pass

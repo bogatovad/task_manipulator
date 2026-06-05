@@ -1,12 +1,15 @@
-from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
-engine = create_async_engine(
-    "postgresql+asyncpg://cism:password@db:5432/cism", echo=True
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import sessionmaker
+
+from src.frameworks_and_drivers.repositories_implementations.aync_sqlalchemy.settings import (
+    database_settings,
 )
+
+engine = create_async_engine(database_settings.url, echo=database_settings.echo)
 
 async_database_session = sessionmaker(
     engine, autoflush=True, expire_on_commit=False, autobegin=True, class_=AsyncSession

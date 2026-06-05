@@ -5,6 +5,9 @@ import logging
 from aio_pika import connect_robust, IncomingMessage
 from aio_pika.abc import AbstractConnection
 
+from src.frameworks_and_drivers.queue_implementations.consumer.depends import (
+    task_controller_dependency,
+)
 from src.frameworks_and_drivers.queue_implementations.settings import rabbitmq_settings
 from src.interface_adapters.dtos.task import TaskDto
 from src.interface_adapters.queue_interfaces.consumer.consumer import (
@@ -16,8 +19,8 @@ logger = logging.getLogger(__name__)
 
 
 class TaskRabbitMqConsumer(TaskQueueConsumerInterface):
-    def __init__(self, url: str, queue_name: str) -> None:
-        super().__init__(url, queue_name)
+    def __init__(self, url: str, queue_name: str, get_controller) -> None:
+        super().__init__(url, queue_name, get_controller)
         self.connection: AbstractConnection | None = None
         self.channel = None
         self.queue = None
@@ -43,12 +46,13 @@ class TaskRabbitMqConsumer(TaskQueueConsumerInterface):
             await asyncio.sleep(self.reconnect_delay)
             raise
 
-    @staticmethod
-    async def _process_message(message: IncomingMessage) -> None:
+    async def _process_message(self, message: IncomingMessage) -> None:
         async with message.process():
-            payload = json.loads(message.body.decode())
-            task = TaskDto(**payload)
-            logger.info(f"Processing task {task}")
+            task = TaskDto(**json.loads(message.body.decode()))
+            async for controller in self.get_controller():
+                await controller.run_task(task)
+                break
+            logger.info("Processed task %s", task.task_id)
 
     async def _start_consuming(self) -> None:
         async with self.queue.iterator() as queue_iter:
@@ -64,10 +68,8 @@ class TaskRabbitMqConsumer(TaskQueueConsumerInterface):
                 logger.error("Unexpected error: %s. Reconnecting...", exc)
             finally:
                 if self.channel:
-                    logger.info("Closing channel")
                     await self.channel.close()
                 if self.connection:
-                    logger.info("Closing connection")
                     await self.connection.close()
                 await asyncio.sleep(self.reconnect_delay)
 
@@ -76,6 +78,7 @@ async def run_consumer() -> None:
     consumer = TaskRabbitMqConsumer(
         url=rabbitmq_settings.url,
         queue_name=rabbitmq_settings.queue_name,
+        get_controller=task_controller_dependency,
     )
     await consumer.run()
 

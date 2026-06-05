@@ -21,6 +21,7 @@ class TaskSqlAlchemyRepository(TaskStorageInterface):
             name=db_task.name,
             description=db_task.description,
             priority=db_task.priority,
+            type_task=db_task.type_task,
             status=db_task.status,
             created_at=db_task.created_at,
             start_date=db_task.start_date,

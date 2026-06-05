@@ -1,7 +1,7 @@
 from sqlalchemy import Column, DateTime, Enum, String, BigInteger, Text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.declarative import declarative_base
-from src.entities.task import TaskPriority, TaskStatus
+from src.entities.task import TaskPriority, TaskStatus, TypeTask
 from datetime import datetime
 
 Base = declarative_base()
@@ -14,6 +14,7 @@ class Task(Base):
     name = Column(String(255))
     description = Column(Text)
     priority = Column(Enum(TaskPriority))
+    type_task = Column(Enum(TypeTask), default=TypeTask.CPU)
     status = Column(Enum(TaskStatus))
     created_at = Column(DateTime, default=datetime.utcnow)
     start_date = Column(DateTime, nullable=True)

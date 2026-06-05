@@ -17,6 +17,12 @@ class TaskStatus(StrEnum):
     CANCELED = "CANCELED"
 
 
+class TypeTask(StrEnum):
+    CPU = "CPU"
+    MEMORY = "MEMORY"
+    LLM = "LLM"
+
+
 class Task:
     name: str
     description: str

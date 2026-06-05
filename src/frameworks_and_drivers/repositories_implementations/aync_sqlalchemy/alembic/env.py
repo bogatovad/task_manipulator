@@ -7,6 +7,9 @@ from alembic import context
 from src.frameworks_and_drivers.repositories_implementations.aync_sqlalchemy.models import (
     Base,
 )
+from src.frameworks_and_drivers.repositories_implementations.aync_sqlalchemy.settings import (
+    database_settings,
+)
 import sys
 from pathlib import Path
 
@@ -47,7 +50,7 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
+    url = database_settings.alembic_url
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -66,8 +69,10 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
+    configuration = config.get_section(config.config_ini_section, {})
+    configuration["sqlalchemy.url"] = database_settings.alembic_url
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        configuration,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
