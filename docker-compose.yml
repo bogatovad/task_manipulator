@@ -1,5 +1,6 @@
 volumes:
   cism_postgres_data:
+  cism_rabbitmq_data:
 
 networks:
   default:
@@ -25,17 +26,55 @@ services:
       - 8000
     ports:
       - "8000:8000"
-    volumes:
-      - ./src/:/opt/src/
+    env_file:
+      - environments/rabbitmq.env
+    depends_on:
+      db:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
     deploy:
       replicas: 1
+
+  worker:
+    <<: *app
+    hostname: worker
+    build:
+      context: ./
+      dockerfile: ./src/frameworks_and_drivers/http_web_fastapi/Dockerfile
+    command:
+      ["uv", "run", "python", "-m", "src.frameworks_and_drivers.queue_implementations.main"]
+    env_file:
+      - environments/rabbitmq.env
+    depends_on:
+      db:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    deploy:
+      replicas: 1
+
+  rabbitmq:
+    <<: *app
+    hostname: rabbitmq
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - cism_rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   db:
     <<: *app
     hostname: db
     image: postgres:15
     ports:
-     - "5532:5432"
+      - "5532:5432"
     env_file:
       - environments/db.env
     restart: unless-stopped

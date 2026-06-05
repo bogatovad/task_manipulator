@@ -29,11 +29,12 @@ class TaskSqlAlchemyRepository(TaskStorageInterface):
             info=db_task.info or {},
         )
 
-    async def create_task(self, task: TaskDto) -> bool:
+    async def create_task(self, task: TaskDto) -> TaskDto:
         db_task = TaskModel(**task.model_dump(exclude={"task_id"}))
         self.session.add(db_task)
         await self.session.flush()
-        return True
+        await self.session.refresh(db_task)
+        return self._to_dto(db_task)
 
     async def get_tasks(self) -> list[TaskDto]:
         result = await self.session.execute(select(TaskModel))

@@ -13,17 +13,14 @@ class CreateTaskUseCase(BaseUseCase):
         self.queue = queue
 
     async def execute(self, task: TaskDto) -> TaskDto:
-        await self.task_repository.create_task(task)
-        await self.queue.publish(task)
-        return task
+        created_task = await self.task_repository.create_task(task)
+        await self.queue.publish(created_task)
+        return created_task
 
 
 class GetTasksUseCase(BaseUseCase):
-    def __init__(
-        self, task_repository: TaskStorageInterface, queue: TaskQueueInterface
-    ):
+    def __init__(self, task_repository: TaskStorageInterface):
         self.task_repository = task_repository
-        self.queue = queue
 
     async def execute(self) -> list[TaskDto]:
         return await self.task_repository.get_tasks()

@@ -4,7 +4,7 @@ from src.entities.task import TaskStatus
 
 # todo: подумать от чего лучше стоит наследоваться. пока оставлю так.
 class TaskStorageInterface:
-    async def create_task(self, task: TaskDto) -> bool:
+    async def create_task(self, task: TaskDto) -> TaskDto:
         pass
 
     async def get_tasks(self) -> list[TaskDto]:

@@ -1,3 +1,8 @@
+from collections.abc import AsyncGenerator
+
+from src.frameworks_and_drivers.queue_implementations.connection import (
+    get_rabbitmq_connection,
+)
 from src.frameworks_and_drivers.queue_implementations.rabbit_mq_queue import (
     TaskRabbitMqQueue,
 )
@@ -16,13 +21,15 @@ from src.usecases.task import (
     GetTasksUseCase,
     DeleteTaskUseCase,
 )
-from collections.abc import AsyncGenerator
 
 
 async def task_controller_dependency() -> AsyncGenerator[TaskController]:
+    rabbitmq_connection = await get_rabbitmq_connection()
+
+    # todo: тут нужно вызвать rabbitmq_connection.close(). подумать где именно.
     async with get_db_async_context_manager() as session:
         task_sql_alchemy_repository = TaskSqlAlchemyRepository(session=session)
-        queue = TaskRabbitMqQueue()
+        queue = TaskRabbitMqQueue(connection=rabbitmq_connection)
 
         create_task_usecase = CreateTaskUseCase(
             task_repository=task_sql_alchemy_repository,
