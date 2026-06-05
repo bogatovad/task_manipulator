@@ -5,12 +5,12 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 engine = create_async_engine(
-    "postgresql+asyncpg://cism:password@host:port/cism", echo=True
+    "postgresql+asyncpg://cism:password@db:5432/cism", echo=True
 )
 
 async_database_session = sessionmaker(
     engine, autoflush=True, expire_on_commit=False, autobegin=True, class_=AsyncSession
-)  # noqa: E501
+)
 
 
 async def get_async_db() -> AsyncGenerator[AsyncSession, None]:

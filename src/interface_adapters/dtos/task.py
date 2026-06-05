@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from src.entities.task import TaskPriority
+from src.entities.task import TaskPriority, TaskStatus
 from datetime import datetime
 
 
@@ -8,9 +8,9 @@ class TaskDto(BaseModel):
     name: str
     description: str
     priority: TaskPriority
-    status: str
-    created_at: datetime
-    start_date: datetime
-    end_date: datetime
-    result: dict
-    info: dict
+    status: TaskStatus
+    created_at: datetime | None = None
+    start_date: datetime | None = None
+    end_date: datetime | None = None
+    result: dict = {}
+    info: dict = {}

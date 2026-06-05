@@ -1,3 +1,4 @@
+from src.interface_adapters.dtos.task import TaskDto
 from src.interface_adapters.dtos.usecases import UsecaseDto
 
 
@@ -5,8 +6,8 @@ class TaskController:
     def __init__(self, usecase: UsecaseDto):
         self.usecase: UsecaseDto = usecase
 
-    async def create_task(self):
-        await self.usecase.create_task_usecase.execute()
+    async def create_task(self, task: TaskDto) -> TaskDto:
+        return await self.usecase.create_task_usecase.execute(task)
 
     async def delete_task(self):
         await self.usecase.delete_task_usecase.execute()
