@@ -1,13 +1,15 @@
 from src.entities.task import TaskStatus
 from src.interface_adapters.dtos.task import TaskDto
-from src.interface_adapters.queue_interfaces.queue import TaskQueueInterface
+from src.interface_adapters.queue_interfaces.publisher.publisher import (
+    TaskQueuePublisherInterface,
+)
 from src.interface_adapters.repositories_interfaces.task import TaskStorageInterface
 from src.usecases.base import BaseUseCase
 
 
 class CreateTaskUseCase(BaseUseCase):
     def __init__(
-        self, task_repository: TaskStorageInterface, queue: TaskQueueInterface
+        self, task_repository: TaskStorageInterface, queue: TaskQueuePublisherInterface
     ):
         self.task_repository = task_repository
         self.queue = queue

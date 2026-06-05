@@ -43,7 +43,7 @@ services:
       context: ./
       dockerfile: ./src/frameworks_and_drivers/http_web_fastapi/Dockerfile
     command:
-      ["uv", "run", "python", "-m", "src.frameworks_and_drivers.queue_implementations.main"]
+      ["uv", "run", "python", "-m", "src.frameworks_and_drivers.queue_implementations.consumer.consumer"]
     env_file:
       - environments/rabbitmq.env
     depends_on:

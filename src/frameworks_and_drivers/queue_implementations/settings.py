@@ -1,5 +1,18 @@
-import os
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-# todo: вынести в Settings
-RABBITMQ_URL = os.getenv("RABBITMQ_URL", "amqp://guest:guest@rabbitmq:5672/")
-RABBITMQ_QUEUE_NAME = os.getenv("RABBITMQ_QUEUE_NAME", "tasks")
+
+class RabbitMQSettings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file="environments/rabbitmq.env",
+        extra="ignore",
+    )
+
+    url: str = Field(
+        default="amqp://guest:guest@rabbitmq:5672/",
+        validation_alias="RABBITMQ_URL",
+    )
+    queue_name: str = Field(default="tasks", validation_alias="RABBITMQ_QUEUE_NAME")
+
+
+rabbitmq_settings = RabbitMQSettings()

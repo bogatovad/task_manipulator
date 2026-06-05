@@ -3,7 +3,7 @@ from collections.abc import AsyncGenerator
 from src.frameworks_and_drivers.queue_implementations.connection import (
     get_rabbitmq_connection,
 )
-from src.frameworks_and_drivers.queue_implementations.rabbit_mq_queue import (
+from src.frameworks_and_drivers.queue_implementations.publisher.publisher import (
     TaskRabbitMqQueue,
 )
 from src.frameworks_and_drivers.repositories_implementations.aync_sqlalchemy.database import (
