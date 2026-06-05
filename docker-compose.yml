@@ -12,8 +12,6 @@ x-app: &app
     options:
       max-file: "3"
       max-size: "10m"
-  env_file:
-    - .env
   restart: always
 
 services:
@@ -31,3 +29,15 @@ services:
       - ./src/:/opt/src/
     deploy:
       replicas: 1
+
+  db:
+    <<: *app
+    hostname: db
+    image: postgres:15
+    ports:
+     - "5532:5432"
+    env_file:
+      - environments/db.env
+    restart: unless-stopped
+    volumes:
+      - cism_postgres_data:/var/lib/postgresql/data

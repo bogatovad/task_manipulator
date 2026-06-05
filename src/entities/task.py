@@ -1,14 +1,14 @@
-from enum import Enum
+from enum import StrEnum
 from datetime import datetime
 
 
-class TaskPriority(str, Enum):
+class TaskPriority(StrEnum):
     LOW = "LOW"
     MEDIUM = "MEDIUM"
     HIGH = "HIGH"
 
 
-class TaskStatus(str, Enum):
+class TaskStatus(StrEnum):
     NEW = "NEW"
     PENDING = "PENDING"
     IN_PROGRESS = "IN_PROGRESS"

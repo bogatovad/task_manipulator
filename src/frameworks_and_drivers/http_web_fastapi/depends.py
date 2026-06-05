@@ -7,15 +7,15 @@ from src.usecases.task import (
     GetTasksUseCase,
     DeleteTaskUseCase,
 )
+from collections.abc import AsyncGenerator
 
 
-async def task_controller_dependency():
+async def task_controller_dependency() -> AsyncGenerator[TaskController]:
     create_task_usecase = CreateTaskUseCase()
     get_task_usecase = GetTaskUseCase()
     get_status_task_usecase = GetStatusTaskUseCase()
     get_tasks_usecase = GetTasksUseCase()
     delete_task_usecase = DeleteTaskUseCase()
-
     usecase_dto = UsecaseDto(
         create_task_usecase=create_task_usecase,
         get_task_usecase=get_task_usecase,
@@ -26,4 +26,4 @@ async def task_controller_dependency():
     task_controller = TaskController(
         usecase=usecase_dto,
     )
-    return task_controller
+    yield task_controller
