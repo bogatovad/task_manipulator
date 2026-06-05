@@ -9,7 +9,7 @@ from src.interface_adapters.queue_interfaces.publisher.publisher import (
 
 class TaskRabbitMqQueue(TaskQueuePublisherInterface):
     async def publish(self, task: TaskDto) -> None:
-        # todo: сейчас на каждый http осздается свой channel!
+        # todo: сейчас на каждый http cоздается свой channel!
         channel = await self.connection.channel()
         await channel.declare_queue(rabbitmq_settings.queue_name, durable=True)
         await channel.default_exchange.publish(
