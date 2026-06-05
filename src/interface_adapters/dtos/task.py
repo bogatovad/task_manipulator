@@ -5,6 +5,7 @@ from datetime import datetime
 
 
 class TaskDto(BaseModel):
+    task_id: int | None = None
     name: str
     description: str
     priority: TaskPriority
