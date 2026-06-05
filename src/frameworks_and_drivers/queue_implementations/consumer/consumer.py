@@ -6,6 +6,7 @@ from aio_pika import connect_robust, IncomingMessage
 from aio_pika.abc import AbstractConnection
 
 from src.frameworks_and_drivers.queue_implementations.settings import rabbitmq_settings
+from src.interface_adapters.dtos.task import TaskDto
 from src.interface_adapters.queue_interfaces.consumer.consumer import (
     TaskQueueConsumerInterface,
 )
@@ -46,7 +47,8 @@ class TaskRabbitMqConsumer(TaskQueueConsumerInterface):
     async def _process_message(message: IncomingMessage) -> None:
         async with message.process():
             payload = json.loads(message.body.decode())
-            logger.info(f"Processing task {payload}")
+            task = TaskDto(**payload)
+            logger.info(f"Processing task {task}")
 
     async def _start_consuming(self) -> None:
         async with self.queue.iterator() as queue_iter:
