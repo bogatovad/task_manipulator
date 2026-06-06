@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import os
 
 from aio_pika import connect_robust, IncomingMessage
 from aio_pika.abc import AbstractConnection
@@ -9,6 +10,7 @@ from src.frameworks_and_drivers.queue_implementations.consumer.depends import (
     task_controller_dependency,
 )
 from src.frameworks_and_drivers.queue_implementations.settings import rabbitmq_settings
+from src.frameworks_and_drivers.queue_implementations.topology import setup_worker_queue
 from src.interface_adapters.dtos.task import TaskDto
 from src.interface_adapters.queue_interfaces.consumer.consumer import (
     TaskQueueConsumerInterface,
@@ -32,10 +34,11 @@ class TaskRabbitMqConsumer(TaskQueueConsumerInterface):
             logger.info("Connected to RabbitMQ")
             self.channel = await self.connection.channel()
             await self.channel.set_qos(prefetch_count=1)
-            self.queue = await self.channel.declare_queue(
+            self.queue = await setup_worker_queue(self.channel, self.queue_name)
+            logger.info(
+                "Consuming queue '%s' [consumer=%s]",
                 self.queue_name,
-                durable=True,
-                auto_delete=False,
+                os.getenv("HOSTNAME", "local"),
             )
         except Exception as exc:
             logger.error(
