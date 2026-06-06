@@ -11,6 +11,8 @@ class ProcessLllTasksUseCase(BaseUseCase):
         self.task_repository = task_repository
 
     async def execute(self, task: TaskDto) -> bool:
+        # todo: вот тут нужно 1) проставить время начала выполнения задачи
+        # todo 2) обновить статус задачи в кэше
         await self.task_repository.update_task_status(
             task_id=task.task_id, status=TaskStatus.IN_PROGRESS
         )
