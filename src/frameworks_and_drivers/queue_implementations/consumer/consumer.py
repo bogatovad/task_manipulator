@@ -6,6 +6,10 @@ import os
 from aio_pika import connect_robust, IncomingMessage
 from aio_pika.abc import AbstractConnection
 
+from src.frameworks_and_drivers.cache_implementations.redis.connection import (
+    close_redis_connection,
+    init_redis_connection,
+)
 from src.frameworks_and_drivers.queue_implementations.consumer.depends import (
     task_controller_dependency,
 )
@@ -78,12 +82,16 @@ class TaskRabbitMqConsumer(TaskQueueConsumerInterface):
 
 
 async def run_consumer() -> None:
+    await init_redis_connection()
     consumer = TaskRabbitMqConsumer(
         url=rabbitmq_settings.url,
         queue_name=rabbitmq_settings.queue_name,
         get_controller=task_controller_dependency,
     )
-    await consumer.run()
+    try:
+        await consumer.run()
+    finally:
+        await close_redis_connection()
 
 
 if __name__ == "__main__":

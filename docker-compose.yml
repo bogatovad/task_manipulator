@@ -43,8 +43,11 @@ x-worker: &worker
     - environments/db.env
     - environments/rabbitmq.env
     - environments/model.env
+    - environments/redis.env
   depends_on:
     pgbouncer:
+      condition: service_started
+    redis:
       condition: service_started
     rabbitmq:
       condition: service_healthy
