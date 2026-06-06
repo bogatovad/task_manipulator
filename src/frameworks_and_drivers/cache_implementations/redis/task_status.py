@@ -1,4 +1,4 @@
-from redis.asyncio import Redis
+from redis.asyncio.client import Redis
 
 from src.entities.task import TaskStatus
 from src.frameworks_and_drivers.cache_implementations.redis.settings import (
@@ -17,7 +17,6 @@ class TaskStatusRedisCache(TaskStatusCacheInterface):
         return f"task:status:{task_id}"
 
     async def get_task_status(self, task_id: int) -> TaskStatus | None:
-        """Get a TaskStatus object by task_id."""
         status = await self.client.get(self._key(task_id))
 
         if status is None:
@@ -26,7 +25,6 @@ class TaskStatusRedisCache(TaskStatusCacheInterface):
         return TaskStatus(status)
 
     async def set_task_status(self, task_id: int, status: TaskStatus) -> None:
-        """Set a TaskStatus object by task_id."""
         await self.client.set(
             self._key(task_id),
             status.value,

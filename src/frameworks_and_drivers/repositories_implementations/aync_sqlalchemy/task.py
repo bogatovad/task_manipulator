@@ -102,12 +102,15 @@ class TaskSqlAlchemyRepository(TaskStorageInterface):
         if db_task is None:
             raise TaskNotFoundError(f"Task {task_id} not found")
 
-        db_task.status = TaskStatus.COMPLETED
+        current_status = TaskStatus.FAILED if error_info != {} else TaskStatus.COMPLETED
+
+        db_task.status = current_status
         db_task.end_date = datetime.utcnow()
         db_task.result = result_task
         db_task.info = error_info
         await self.session.flush()
-        return TaskStatus.COMPLETED
+
+        return current_status
 
     async def commit(self) -> bool:
         await self.session.commit()

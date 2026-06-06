@@ -80,5 +80,8 @@ class GetStatusTaskUseCase(BaseUseCase):
                 return cached_status
 
         status = await self.task_repository.get_task_status(task_id)
-        await self.status_cache.set_task_status(task_id, status)
+
+        if self.status_cache is not None:
+            await self.status_cache.set_task_status(task_id, status)
+
         return status
