@@ -10,7 +10,7 @@ from src.interface_adapters.cache_interfaces.task_status import TaskStatusCacheI
 class TaskStatusRedisCache(TaskStatusCacheInterface):
     def __init__(self, client: Redis) -> None:
         self.client = client
-        self.ttl_seconds = redis_settings.status_ttl_seconds
+        self.ttl = redis_settings.status_ttl_seconds
 
     @staticmethod
     def _key(task_id: int) -> str:
@@ -28,5 +28,5 @@ class TaskStatusRedisCache(TaskStatusCacheInterface):
         await self.client.set(
             self._key(task_id),
             status.value,
-            ex=self.ttl_seconds,
+            ex=self.ttl,
         )
